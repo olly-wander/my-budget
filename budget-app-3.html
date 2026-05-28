@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Бюджет">
+<meta name="theme-color" content="#FBF8F2">
+<title>Бюджет</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --ink:#2E2A3A; --navy:#3B4A6B; --sage:#6E8C7B; --terra:#C97B63; --gold:#D8A24A;
+  --cream:#FBF8F2; --card:#FFFFFF; --line:#E8E1D4; --soft:#F3EEE4;
+  --softnavy:#E7EAF1; --softsage:#E6EDE7; --softterra:#F6E6DF; --softgold:#F7EDD6;
+  --shadow:0 2px 14px rgba(46,42,58,.06); --shadow2:0 6px 28px rgba(46,42,58,.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:'Manrope',-apple-system,sans-serif;background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;padding-bottom:calc(84px + env(safe-area-inset-bottom));overscroll-behavior-y:none}
+.wrap{max-width:520px;margin:0 auto;padding:0 16px}
+.head{padding:calc(env(safe-area-inset-top) + 20px) 18px 6px;max-width:520px;margin:0 auto}
+.title{font-family:'Fraunces',serif;font-weight:600;font-size:30px;color:var(--navy);letter-spacing:-.025em;line-height:1.05}
+.sub{font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:15px;color:var(--terra);margin-top:3px}
+.page{display:none;animation:fade .3s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.amountcard{background:var(--card);border-radius:24px;box-shadow:var(--shadow);padding:22px 18px 18px;margin-top:14px;border:1px solid var(--line)}
+.amountrow{display:flex;align-items:baseline;justify-content:center;gap:8px}
+#amount{font-family:'Fraunces',serif;font-weight:600;font-size:58px;color:var(--ink);border:none;background:transparent;text-align:center;width:100%;outline:none;letter-spacing:-.03em}
+#amount::placeholder{color:#D8CFBF}
+.cur{font-family:'Fraunces',serif;font-size:28px;color:var(--gold);font-weight:600}
+.convert{text-align:center;font-size:13px;color:#9A917F;margin-top:7px;min-height:17px;font-weight:500}
+.seclabel{font-family:'Fraunces',serif;font-weight:600;font-size:15px;color:var(--navy);margin:20px 4px 11px}
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.cat{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:13px 6px 11px;text-align:center;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px;min-height:74px;justify-content:center}
+.cat .em{font-size:25px;line-height:1}
+.cat .nm{font-size:12px;color:var(--ink);font-weight:600;line-height:1.18;letter-spacing:-.01em}
+.cat.sel{background:var(--navy);border-color:var(--navy);transform:scale(.97);box-shadow:var(--shadow2)}
+.cat.sel .nm{color:#fff}
+.note{width:100%;margin-top:16px;border:1.5px solid var(--line);border-radius:15px;padding:14px 16px;font-family:'Manrope';font-size:15px;color:var(--ink);background:var(--card);outline:none}
+.note::placeholder{color:#B8AF9C}
+.bigbtn{width:100%;margin-top:13px;border:none;border-radius:17px;background:var(--terra);color:#fff;font-family:'Manrope';font-weight:700;font-size:16px;padding:17px;cursor:pointer;box-shadow:0 4px 16px rgba(201,123,99,.32);transition:transform .12s}
+.bigbtn:active{transform:scale(.98)}
+.bigbtn.ghost{background:var(--soft);color:var(--navy);box-shadow:none;font-size:15px;padding:13px;margin-top:9px}
+.toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:calc(96px + env(safe-area-inset-bottom));background:var(--sage);color:#fff;padding:13px 24px;border-radius:30px;font-weight:700;font-size:14px;opacity:0;pointer-events:none;transition:all .3s;z-index:50;box-shadow:var(--shadow2)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.statbig{background:linear-gradient(135deg,var(--navy),#4A5C82);border-radius:24px;padding:22px;color:#fff;margin-top:14px;box-shadow:var(--shadow2)}
+.statbig .lab{font-size:12px;opacity:.82;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.statbig .val{font-family:'Fraunces',serif;font-size:44px;font-weight:600;margin-top:3px;letter-spacing:-.025em}
+.statbig .meta{font-size:13.5px;opacity:.88;margin-top:5px}
+.bar{height:10px;border-radius:7px;background:rgba(255,255,255,.2);margin-top:14px;overflow:hidden}
+.bar > i{display:block;height:100%;border-radius:7px;background:var(--gold);transition:width .5s}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:11px}
+.mini{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 15px;box-shadow:var(--shadow)}
+.mini .lab{font-size:11px;color:#A39A87;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.mini .val{font-family:'Fraunces',serif;font-size:25px;font-weight:600;margin-top:4px}
+.catlist{margin-top:6px}
+.donutwrap{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:20px 18px;margin-top:6px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.donut{position:relative;width:200px;height:200px}
+.donut .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
+.donut .center .ct{font-family:'Fraunces',serif;font-size:24px;font-weight:600;color:var(--ink);letter-spacing:-.02em}
+.donut .center .cl{font-size:10.5px;color:#A39A87;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-top:1px}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:7px 14px;width:100%}
+.lgi{display:flex;align-items:center;gap:7px;font-size:12px;min-width:0}
+.chtog{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.chtog button{background:var(--card);border:none;font-family:'Manrope';font-size:11px;font-weight:700;color:#A39A87;padding:5px 10px;cursor:pointer}
+.chtog button.on{background:var(--navy);color:#fff}
+.barchart{width:100%;display:none;flex-direction:column;gap:11px}
+.bcrow .bctop{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.bcrow .bcname{font-size:12.5px;font-weight:600;color:var(--ink)}
+.bcrow .bcval{font-family:'Fraunces',serif;font-size:13px;font-weight:600;color:#7C7361}
+.bcrow .bctrack{height:14px;border-radius:7px;background:var(--soft);overflow:hidden}
+.bcrow .bctrack > i{display:block;height:100%;border-radius:7px;transition:width .5s}
+.lgi .dot{width:11px;height:11px;border-radius:3px;flex-shrink:0}
+.lgi .lt{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink);font-weight:500}
+.lgi .lp{font-family:'Fraunces',serif;font-weight:600;color:#7C7361;font-size:11.5px}
+.crow{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line)}
+.crow .ic{font-size:20px;width:28px;text-align:center}
+.crow .nm{flex:1;font-size:14px;font-weight:600}
+.crow .track{flex:1.1;height:8px;border-radius:5px;background:var(--soft);overflow:hidden;margin:0 4px}
+.crow .track > i{display:block;height:100%;border-radius:5px;background:var(--terra)}
+.crow .am{font-family:'Fraunces',serif;font-size:15px;font-weight:600;min-width:64px;text-align:right}
+.setcard{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin-top:13px;box-shadow:var(--shadow)}
+.setcard h3{font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.setcard .hint{font-size:12.5px;color:#9A917F;font-style:italic;margin-bottom:12px;line-height:1.45}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;color:#A39A87;font-weight:700;margin-bottom:5px;letter-spacing:.02em}
+.field input,.field select{width:100%;border:1.5px solid var(--line);border-radius:13px;padding:12px 14px;font-family:'Manrope';font-size:15px;color:var(--ink);outline:none;background:var(--cream)}
+.warn{background:var(--softterra);border-radius:14px;padding:13px 15px;font-size:12.5px;color:#9A4F38;line-height:1.55;margin-top:6px}
+.envgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:4px 0 12px}
+.env{border-radius:14px;padding:11px 8px;text-align:center}
+.env .el{font-size:10.5px;font-weight:700;opacity:.85}
+.env .ev{font-family:'Fraunces',serif;font-size:19px;font-weight:600;margin-top:2px}
+.month-sw{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:14px}
+.month-sw button{background:var(--card);border:1px solid var(--line);width:38px;height:38px;border-radius:50%;font-size:18px;color:var(--navy);cursor:pointer}
+.month-sw .mname{font-family:'Fraunces',serif;font-weight:600;font-size:19px;min-width:150px;text-align:center}
+.nav{position:fixed;bottom:0;left:0;right:0;background:rgba(251,248,242,.93);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:9px 8px calc(9px + env(safe-area-inset-bottom));z-index:40;max-width:520px;margin:0 auto}
+.nav button{background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:5px 12px;border-radius:13px;transition:all .15s}
+.nav button .ni{font-size:21px;filter:grayscale(.35);opacity:.45;transition:all .15s}
+.nav button .nl{font-family:'Fraunces',serif;font-size:11.5px;font-weight:600;color:#A39A87}
+.nav button.on .ni{filter:none;opacity:1;transform:translateY(-1px)}
+.nav button.on .nl{color:var(--navy)}
+</style>
+</head>
+<body>
+
+<div class="head">
+  <div class="title" id="pageTitle">Новая трата</div>
+  <div class="sub" id="pageSub">купила — внеси сразу</div>
+</div>
+
+<div class="page active wrap" id="p-add">
+  <div class="amountcard">
+    <div class="amountrow"><input id="amount" type="number" inputmode="decimal" placeholder="0" /><span class="cur">¥</span></div>
+    <div class="convert" id="convert"></div>
+  </div>
+  <div class="seclabel">Категория</div>
+  <div class="cats" id="cats"></div>
+  <input class="note" id="noteInput" type="text" placeholder="Комментарий (необязательно)" />
+  <button class="bigbtn" id="saveBtn">Записать трату</button>
+</div>
+
+<div class="page wrap" id="p-sum">
+  <div class="month-sw"><button id="prevM">‹</button><div class="mname" id="mName"></div><button id="nextM">›</button></div>
+  <div class="statbig">
+    <div class="lab">Потрачено на жизнь за месяц</div>
+    <div class="val" id="spentVal">0 ¥</div>
+    <div class="meta" id="spentMeta"></div>
+    <div class="bar"><i id="spentBar"></i></div>
+  </div>
+  <div class="duo">
+    <div class="mini"><div class="lab">Остаток лимита</div><div class="val" id="leftVal" style="color:var(--sage)">0 ¥</div></div>
+    <div class="mini"><div class="lab">Трат за месяц</div><div class="val" id="cntVal" style="color:var(--navy)">0</div></div>
+  </div>
+  <div class="seclabel" style="display:flex;justify-content:space-between;align-items:center">
+    <span>Распределение расходов</span>
+    <span class="chtog"><button id="tgDonut" class="on">◍ Кольцо</button><button id="tgBars">▤ Столбики</button></span>
+  </div>
+  <div class="donutwrap" id="donutWrap">
+    <div class="donut" id="donut"></div>
+    <div class="legend" id="legend"></div>
+    <div class="barchart" id="barchart"></div>
+  </div>
+  <div class="seclabel">По категориям</div>
+  <div class="catlist" id="catList"></div>
+</div>
+
+<div class="page wrap" id="p-goal">
+  <div class="statbig" style="background:linear-gradient(135deg,var(--sage),#86A593)">
+    <div class="lab">Накоплено к цели</div>
+    <div class="val" id="goalVal">0 ¥</div>
+    <div class="meta" id="goalMeta">цель — 15 000 ¥ к июню 2027</div>
+    <div class="bar"><i id="goalBar"></i></div>
+  </div>
+  <div class="setcard">
+    <h3>Дополнительный доход</h3>
+    <div class="hint">Деньги с подработок — именно из них копится цель.</div>
+    <div class="field"><input id="ordIn" type="number" inputmode="decimal" placeholder="например 1500"></div>
+    <button class="bigbtn" id="addGoal">В копилку цели →</button>
+  </div>
+  <div class="setcard">
+    <h3>🛟 Буфер на крупные траты</h3>
+    <div class="hint">Фонд под нерегулярные расходы: одежда и обувь, закупки впрок и непредвиденное. Откладывай сюда каждый месяц, а крупную покупку списывай отсюда — тогда не будет «провальных» месяцев.</div>
+    <div class="envgrid">
+      <div class="env" style="background:var(--softsage)"><div class="el" style="color:var(--sage)">Одежда</div><div class="ev" id="eClo" style="color:var(--sage)">0</div></div>
+      <div class="env" style="background:var(--softgold)"><div class="el" style="color:var(--gold)">Склад</div><div class="ev" id="eSto" style="color:var(--gold)">0</div></div>
+      <div class="env" style="background:var(--softterra)"><div class="el" style="color:var(--terra)">Непредвид.</div><div class="ev" id="eUnf" style="color:var(--terra)">0</div></div>
+    </div>
+    <div class="mini" style="box-shadow:none;border-color:var(--line);margin-bottom:12px"><div class="lab">Всего в буфере</div><div class="val" id="bufVal" style="color:var(--navy)">0 ¥</div></div>
+    <div class="field"><label>Сумма, ¥</label><input id="bufIn" type="number" inputmode="decimal" placeholder="например 450"></div>
+    <div class="field"><label>Конверт</label>
+      <select id="bufEnv"><option value="clo">👗 Одежда и обувь</option><option value="sto">📦 Склад (впрок)</option><option value="unf">🧩 Непредвиденное</option></select></div>
+    <button class="bigbtn ghost" id="bufAdd">＋ Отложить в буфер</button>
+    <button class="bigbtn ghost" id="bufSpend" style="color:var(--terra)">－ Списать трату из буфера</button>
+  </div>
+  <div class="setcard">
+    <h3>✈️ Накопления на поездку в Минск</h3>
+    <div class="hint">Копилка на билеты и подарки к поездке. Откладывай заранее по чуть-чуть, чтобы зима и лето не били по бюджету.</div>
+    <div class="duo" style="margin-top:0">
+      <div class="mini" style="box-shadow:none;border-color:var(--softgold);background:var(--softgold)"><div class="lab">Собрано</div><div class="val" id="tripVal" style="color:var(--gold)">0 ¥</div></div>
+      <div class="mini" style="box-shadow:none;border-color:var(--softgold);background:var(--softgold)"><div class="lab">До 7 000 ¥</div><div class="val" id="tripLeft" style="color:var(--terra)">0 ¥</div></div>
+    </div>
+    <div class="field" style="margin-top:12px"><label>Сумма, ¥</label><input id="tripIn" type="number" inputmode="decimal" placeholder="например 750"></div>
+    <button class="bigbtn ghost" id="addTrip">＋ Отложить на поездку</button>
+    <button class="bigbtn ghost" id="spendTrip" style="color:var(--terra)">－ Поездка состоялась (обнулить)</button>
+  </div>
+</div>
+
+<div class="page wrap" id="p-set">
+  <div class="setcard">
+    <h3>Параметры месяца</h3>
+    <div class="field"><label>Лимит расходов на жизнь, ¥</label><input id="limitIn" type="number" inputmode="decimal"></div>
+  </div>
+  <div class="setcard">
+    <h3>Курсы валют</h3>
+    <div class="hint" id="rateInfo"></div>
+    <button class="bigbtn" id="fxBtn" style="background:var(--sage);box-shadow:none;margin-bottom:12px">🔄 Обновить курс из интернета</button>
+    <div class="field"><label>1 ¥ = ? BYN</label><input id="rateByn" type="number" inputmode="decimal" step="0.0001"></div>
+    <div class="field"><label>1 ¥ = ? RUB</label><input id="rateRub" type="number" inputmode="decimal" step="0.01"></div>
+    <button class="bigbtn ghost" id="saveSet">Сохранить параметры</button>
+  </div>
+  <div class="setcard">
+    <h3>Сохранность данных</h3>
+    <div class="warn">⚠️ Данные хранятся в этом телефоне. Раз в 1–2 недели делай <b>Экспорт</b> и сохраняй файл (в Заметки, на почту себе или в облако) — на случай, если Safari очистит память.</div>
+    <button class="bigbtn" id="expBtn" style="margin-top:12px;background:var(--navy);box-shadow:none">⬇ Экспорт всех данных</button>
+    <button class="bigbtn ghost" id="impBtn">⬆ Импорт из файла</button>
+    <input type="file" id="impFile" accept=".json" style="display:none">
+  </div>
+</div>
+
+<div class="toast" id="toast">Записано ✓</div>
+
+<div class="nav">
+  <button class="on" data-p="add"><span class="ni">➕</span><span class="nl">Внести</span></button>
+  <button data-p="sum"><span class="ni">📊</span><span class="nl">Месяц</span></button>
+  <button data-p="goal"><span class="ni">🎯</span><span class="nl">Цель</span></button>
+  <button data-p="set"><span class="ni">⚙️</span><span class="nl">Настройки</span></button>
+</div>
+
+<script>
+const CATS=[
+ ["🍎","Фрукты и ягоды"],["🥕","Овощи"],["🧀","Молочные"],["🥖","Хлеб и выпечка"],
+ ["🥚","Белковые"],["🌾","Крупы и бакалея"],["🫙","Консервы и соусы"],["🛒","Прочее (продукты)"],
+ ["🍱","Готовая еда"],["☕","Кофе"],["🍽️","Кафе и рестораны"],["🚇","Транспорт"],
+ ["📱","Связь, подписки"],["🏠","Хозтовары"],["🎉","Досуг"],["🎁","Подарки и праздники"],
+ ["👗","Личные вещи"],["💊","Здоровье"],["💪","Спортзал"],["✈️","Путешествия и поездки"],
+ ["🧳","Закупки в Минск"],["🧩","Прочее"]
+];
+const DB="budget_v2";
+const defaults={limit:3500,rateByn:0.44,rateRub:11.45,goal:0,trip:0,buf:{clo:0,sto:0,unf:0},tx:[],fxUpdated:""};
+let S=load();
+function clone(o){return JSON.parse(JSON.stringify(o));}
+function load(){try{const r=localStorage.getItem(DB);if(!r)return clone(defaults);
+  const o=JSON.parse(r);if(!o.buf)o.buf={clo:0,sto:0,unf:0};return Object.assign(clone(defaults),o);}
+  catch(e){return clone(defaults);}}
+function save(){try{localStorage.setItem(DB,JSON.stringify(S));}catch(e){alert("Не удалось сохранить — возможно, память переполнена.");}}
+
+let selCat=null;
+const grid=document.getElementById("cats");
+CATS.forEach(([em,nm],i)=>{const d=document.createElement("div");d.className="cat";d.dataset.i=i;
+  d.innerHTML=`<span class="em">${em}</span><span class="nm">${nm}</span>`;
+  d.onclick=()=>{document.querySelectorAll(".cat").forEach(x=>x.classList.remove("sel"));d.classList.add("sel");selCat=i;};
+  grid.appendChild(d);});
+
+const amtEl=document.getElementById("amount"),conv=document.getElementById("convert");
+amtEl.oninput=()=>{const v=parseFloat(amtEl.value);if(!v){conv.textContent="";return;}
+  conv.textContent=`≈ ${(v*S.rateByn).toFixed(2)} BYN  ·  ${(v*S.rateRub).toFixed(0)} RUB`;};
+
+document.getElementById("saveBtn").onclick=()=>{const v=parseFloat(amtEl.value);
+  if(!v||v<=0){flash("Введи сумму",true);return;}
+  if(selCat===null){flash("Выбери категорию",true);return;}
+  S.tx.unshift({a:v,c:selCat,n:document.getElementById("noteInput").value.trim(),d:Date.now()});save();
+  amtEl.value="";document.getElementById("noteInput").value="";conv.textContent="";
+  document.querySelectorAll(".cat").forEach(x=>x.classList.remove("sel"));selCat=null;
+  flash("Записано ✓");renderSum();};
+
+function flash(msg,err){const t=document.getElementById("toast");t.textContent=msg;
+  t.style.background=err?"var(--terra)":"var(--sage)";t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),1400);}
+
+let viewM=new Date();viewM.setDate(1);
+const MN=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
+document.getElementById("prevM").onclick=()=>{viewM.setMonth(viewM.getMonth()-1);renderSum();};
+document.getElementById("nextM").onclick=()=>{viewM.setMonth(viewM.getMonth()+1);renderSum();};
+function monthTx(){const y=viewM.getFullYear(),m=viewM.getMonth();
+  return S.tx.filter(t=>{const d=new Date(t.d);return d.getFullYear()===y&&d.getMonth()===m;});}
+
+function renderSum(){document.getElementById("mName").textContent=`${MN[viewM.getMonth()]} ${viewM.getFullYear()}`;
+  const tx=monthTx();const spent=tx.reduce((s,t)=>s+t.a,0);
+  document.getElementById("spentVal").textContent=fmt(spent)+" ¥";
+  document.getElementById("spentMeta").textContent=`из лимита ${fmt(S.limit)} ¥  ·  ≈ ${(spent*S.rateByn).toFixed(0)} BYN  ·  ${(spent*S.rateRub).toFixed(0)} RUB`;
+  const pct=Math.min(100,spent/S.limit*100);const bar=document.getElementById("spentBar");
+  bar.style.width=pct+"%";bar.style.background=spent>S.limit?"var(--terra)":"var(--gold)";
+  const left=S.limit-spent;const lv=document.getElementById("leftVal");
+  lv.textContent=fmt(left)+" ¥";lv.style.color=left<0?"var(--terra)":"var(--sage)";
+  document.getElementById("cntVal").textContent=tx.length;
+  const byc={};tx.forEach(t=>byc[t.c]=(byc[t.c]||0)+t.a);
+  const arr=Object.entries(byc).sort((a,b)=>b[1]-a[1]);
+  lastArr=arr;lastTotal=spent;renderChart();
+  const max=arr.length?arr[0][1]:1;const cl=document.getElementById("catList");cl.innerHTML="";
+  if(!arr.length){cl.innerHTML='<div style="text-align:center;color:#B8AF9C;padding:50px 20px;font-size:14px;font-style:italic">Пока нет трат в этом месяце</div>';}
+  arr.forEach(([ci,sum])=>{const [em,nm]=CATS[ci];const row=document.createElement("div");row.className="crow";
+    row.innerHTML=`<span class="ic">${em}</span><span class="nm">${nm}</span><span class="track"><i style="width:${sum/max*100}%"></i></span><span class="am">${fmt(sum)} ¥</span>`;cl.appendChild(row);});}
+function fmt(n){return Math.round(n).toLocaleString("ru-RU");}
+
+const PAL=["#3B4A6B","#C97B63","#6E8C7B","#D8A24A","#8B6F9E","#B0794A","#5C8A9E","#C26B86",
+           "#7A9B6E","#A8853D","#6B5B95","#C98A5E","#4F7C8A","#B5705C","#88A06B","#9E6B7C",
+           "#5E7A9B","#B89248","#7C8B5C","#A0607A","#6E8FA0","#C2925A"];
+let chartMode="donut",lastArr=[],lastTotal=0;
+function renderChart(){chartMode==="bars"?drawBars(lastArr,lastTotal):drawDonut(lastArr,lastTotal);}
+document.getElementById("tgDonut").onclick=()=>{chartMode="donut";
+  document.getElementById("tgDonut").classList.add("on");document.getElementById("tgBars").classList.remove("on");renderChart();};
+document.getElementById("tgBars").onclick=()=>{chartMode="bars";
+  document.getElementById("tgBars").classList.add("on");document.getElementById("tgDonut").classList.remove("on");renderChart();};
+
+function drawDonut(arr,total){
+  const wrap=document.getElementById("donutWrap");
+  const donut=document.getElementById("donut"),legend=document.getElementById("legend"),bars=document.getElementById("barchart");
+  bars.style.display="none";
+  if(!arr.length){wrap.style.display="none";return;}
+  wrap.style.display="flex";donut.style.display="block";legend.style.display="grid";
+  const R=90,r=58,C=100,circ=2*Math.PI*R;let off=0,segs="";
+  arr.forEach(([ci,sum],i)=>{const frac=sum/total,len=frac*circ,col=PAL[i%PAL.length];
+    segs+=`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${col}" stroke-width="${R-r}" stroke-dasharray="${len} ${circ-len}" stroke-dashoffset="${-off}" transform="rotate(-90 ${C} ${C})"><title>${CATS[ci][1]}: ${fmt(sum)} ¥</title></circle>`;off+=len;});
+  donut.innerHTML=`<svg viewBox="0 0 200 200" width="200" height="200">${segs}</svg><div class="center"><div class="ct">${fmt(total)} ¥</div><div class="cl">всего за месяц</div></div>`;
+  legend.innerHTML=arr.map(([ci,sum],i)=>{const pct=(sum/total*100).toFixed(0);
+    return `<div class="lgi"><span class="dot" style="background:${PAL[i%PAL.length]}"></span><span class="lt">${CATS[ci][0]} ${CATS[ci][1]}</span><span class="lp">${pct}%</span></div>`;}).join("");
+}
+function drawBars(arr,total){
+  const wrap=document.getElementById("donutWrap");
+  const donut=document.getElementById("donut"),legend=document.getElementById("legend"),bars=document.getElementById("barchart");
+  if(!arr.length){wrap.style.display="none";return;}
+  wrap.style.display="flex";donut.style.display="none";legend.style.display="none";bars.style.display="flex";
+  const max=arr[0][1];
+  bars.innerHTML=arr.map(([ci,sum],i)=>{const pct=(sum/total*100).toFixed(0),w=sum/max*100,col=PAL[i%PAL.length];
+    return `<div class="bcrow"><div class="bctop"><span class="bcname">${CATS[ci][0]} ${CATS[ci][1]}</span><span class="bcval">${fmt(sum)} ¥ · ${pct}%</span></div><div class="bctrack"><i style="width:${w}%;background:${col}"></i></div></div>`;}).join("");
+}
+
+function renderGoal(){
+  document.getElementById("goalVal").textContent=fmt(S.goal)+" ¥";
+  document.getElementById("goalBar").style.width=Math.min(100,S.goal/15000*100)+"%";
+  document.getElementById("goalMeta").textContent=`цель — 15 000 ¥ к июню 2027  ·  осталось ${fmt(Math.max(0,15000-S.goal))} ¥`;
+  document.getElementById("tripVal").textContent=fmt(S.trip)+" ¥";
+  document.getElementById("tripLeft").textContent=fmt(Math.max(0,7000-S.trip))+" ¥";
+  document.getElementById("eClo").textContent=fmt(S.buf.clo);
+  document.getElementById("eSto").textContent=fmt(S.buf.sto);
+  document.getElementById("eUnf").textContent=fmt(S.buf.unf);
+  document.getElementById("bufVal").textContent=fmt(S.buf.clo+S.buf.sto+S.buf.unf)+" ¥";}
+
+document.getElementById("addGoal").onclick=()=>{const v=parseFloat(document.getElementById("ordIn").value);
+  if(!v){flash("Введи сумму",true);return;}S.goal+=v;save();document.getElementById("ordIn").value="";renderGoal();flash("В копилке ✓");};
+document.getElementById("bufAdd").onclick=()=>{const v=parseFloat(document.getElementById("bufIn").value);
+  if(!v){flash("Введи сумму",true);return;}const e=document.getElementById("bufEnv").value;
+  S.buf[e]+=v;save();document.getElementById("bufIn").value="";renderGoal();flash("Отложено в буфер ✓");};
+document.getElementById("bufSpend").onclick=()=>{const v=parseFloat(document.getElementById("bufIn").value);
+  if(!v){flash("Введи сумму",true);return;}const e=document.getElementById("bufEnv").value;
+  S.buf[e]-=v;save();document.getElementById("bufIn").value="";renderGoal();flash("Списано из буфера ✓");};
+document.getElementById("addTrip").onclick=()=>{const v=parseFloat(document.getElementById("tripIn").value);
+  if(!v){flash("Введи сумму",true);return;}S.trip+=v;save();document.getElementById("tripIn").value="";renderGoal();flash("Отложено ✓");};
+document.getElementById("spendTrip").onclick=()=>{if(!confirm("Поездка состоялась? Фонд поездок обнулится."))return;
+  S.trip=0;save();renderGoal();flash("Фонд обнулён ✓");};
+
+function fillSet(){document.getElementById("limitIn").value=S.limit;
+  document.getElementById("rateByn").value=S.rateByn;document.getElementById("rateRub").value=S.rateRub;
+  document.getElementById("rateInfo").textContent=S.fxUpdated
+    ? `Курс обновлён ${S.fxUpdated}. Для точности впиши банковский курс вручную.`
+    : "Для точности впиши банковский курс вручную.";}
+document.getElementById("saveSet").onclick=()=>{S.limit=parseFloat(document.getElementById("limitIn").value)||3500;
+  S.rateByn=parseFloat(document.getElementById("rateByn").value)||0.44;
+  S.rateRub=parseFloat(document.getElementById("rateRub").value)||11.45;save();renderSum();flash("Сохранено ✓");};
+
+document.getElementById("fxBtn").onclick=async()=>{
+  if(!navigator.onLine){flash("Нет интернета",true);return;}
+  flash("Загружаю курс…");
+  const sources=[
+    async()=>{const r=await fetch("https://api.frankfurter.app/latest?from=CNY&to=BYN,RUB");const j=await r.json();return{byn:j.rates.BYN,rub:j.rates.RUB};},
+    async()=>{const r=await fetch("https://open.er-api.com/v6/latest/CNY");const j=await r.json();return{byn:j.rates.BYN,rub:j.rates.RUB};},
+    async()=>{const r=await fetch("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/cny.json");const j=await r.json();return{byn:j.cny.byn,rub:j.cny.rub};}
+  ];
+  let reached=false;
+  for(const src of sources){try{const x=await src();reached=true;
+    if(x.byn&&x.rub){S.rateByn=+(+x.byn).toFixed(4);S.rateRub=+(+x.rub).toFixed(2);
+      S.fxUpdated=new Date().toLocaleDateString("ru-RU");save();fillSet();flash("Курс обновлён ✓");return;}}
+    catch(e){}}
+  flash(reached?"Сервис не отдал курс":"Сервисы недоступны (блокировка/VPN)",true);};
+
+document.getElementById("expBtn").onclick=()=>{const blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);const a=document.createElement("a");const d=new Date();
+  a.href=url;a.download=`бюджет-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}.json`;
+  a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);flash("Сохрани файл (Файлы / Заметки)");};
+document.getElementById("impBtn").onclick=()=>document.getElementById("impFile").click();
+document.getElementById("impFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!confirm("Заменить текущие данные данными из файла?"))return;
+    S=Object.assign(clone(defaults),d);if(!S.buf)S.buf={clo:0,sto:0,unf:0};save();fillSet();renderSum();renderGoal();flash("Импортировано ✓");}
+    catch(err){flash("Файл не распознан",true);}};r.readAsText(f);};
+
+const titles={add:["Новая трата","купила — внеси сразу"],sum:["Месяц","сводка расходов"],
+  goal:["Цель и накопления","копилка, буфер, поездки"],set:["Настройки","лимит, курсы, данные"]};
+document.querySelectorAll(".nav button").forEach(b=>{b.onclick=()=>{
+  document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+  const p=b.dataset.p;document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+  document.getElementById("p-"+p).classList.add("active");
+  document.getElementById("pageTitle").textContent=titles[p][0];
+  document.getElementById("pageSub").textContent=titles[p][1];
+  if(p==="sum")renderSum();if(p==="goal")renderGoal();if(p==="set")fillSet();window.scrollTo(0,0);};});
+
+fillSet();renderSum();renderGoal();
+</script>
+</body>
+</html>
