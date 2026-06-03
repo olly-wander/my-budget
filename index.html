@@ -44,14 +44,12 @@ body{font-family:'Manrope',-apple-system,sans-serif;background:var(--cream);colo
 .note{width:100%;margin-top:16px;border:1.5px solid var(--line);border-radius:15px;padding:14px 16px;font-family:'Manrope';font-size:15px;color:var(--ink);background:var(--card);outline:none}
 .note::placeholder{color:#B8AF9C}
 .stockbox{margin-top:13px;background:var(--card);border:1.5px solid var(--line);border-radius:15px;padding:13px 15px}
-.stockrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.stockrow label{font-size:13.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:8px}
-.switch{position:relative;width:46px;height:27px;flex-shrink:0}
-.switch input{opacity:0;width:0;height:0}
-.slider{position:absolute;inset:0;background:var(--line);border-radius:27px;transition:.2s;cursor:pointer}
-.slider:before{content:"";position:absolute;width:21px;height:21px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.switch input:checked + .slider{background:var(--sage)}
-.switch input:checked + .slider:before{transform:translateX(19px)}
+.stockrow{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;user-select:none;-webkit-user-select:none}
+.stockrow label{font-size:13.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:8px;pointer-events:none}
+.switch{position:relative;width:48px;height:28px;flex-shrink:0;border-radius:28px;background:var(--line);transition:.2s;pointer-events:none}
+.switch:before{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.stockbox.on .switch{background:var(--sage)}
+.stockbox.on .switch:before{transform:translateX(20px)}
 .stockenv{margin-top:11px;display:none}
 .stockenv.show{display:block}
 .stockenv select{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;font-family:'Manrope';font-size:14px;color:var(--ink);background:var(--cream);outline:none}
@@ -163,10 +161,10 @@ body{font-family:'Manrope',-apple-system,sans-serif;background:var(--cream);colo
  <div class="seclabel">Категория</div>
  <div class="cats" id="cats"></div>
  <input class="note" id="noteInput" type="text" placeholder="Комментарий (необязательно)" />
- <div class="stockbox">
-   <div class="stockrow">
+ <div class="stockbox" id="stockBox">
+   <div class="stockrow" id="stockRow">
      <label>📦 Это закупка впрок</label>
-     <span class="switch"><input type="checkbox" id="stockChk"><span class="slider"></span></span>
+     <span class="switch"></span>
    </div>
    <div class="stockenv" id="stockEnv">
      <select id="stockSel"></select>
@@ -354,9 +352,13 @@ CATS.forEach(([em,nm],i)=>{const d=document.createElement("div");d.className="ca
  grid.appendChild(d);});
 
 // stock toggle
-const stockChk=document.getElementById("stockChk"),stockEnv=document.getElementById("stockEnv"),stockSel=document.getElementById("stockSel");
+const stockBox=document.getElementById("stockBox"),stockRow=document.getElementById("stockRow"),stockEnv=document.getElementById("stockEnv"),stockSel=document.getElementById("stockSel");
+let stockOn=false;
 function fillStockSel(){stockSel.innerHTML=S.envs.map(e=>`<option value="${e.id}">${e.name} · ${fmt(e.amt)} ¥</option>`).join("");}
-stockChk.onchange=()=>{stockEnv.classList.toggle("show",stockChk.checked);if(stockChk.checked)fillStockSel();};
+stockRow.addEventListener("click",()=>{stockOn=!stockOn;
+ stockBox.classList.toggle("on",stockOn);
+ stockEnv.classList.toggle("show",stockOn);
+ if(stockOn)fillStockSel();});
 
 const amtEl=document.getElementById("amount"),conv=document.getElementById("convert");
 amtEl.oninput=()=>{const v=parseFloat(amtEl.value);if(!v){conv.textContent="";return;}
@@ -365,13 +367,13 @@ amtEl.oninput=()=>{const v=parseFloat(amtEl.value);if(!v){conv.textContent="";re
 document.getElementById("saveBtn").onclick=()=>{const v=parseFloat(amtEl.value);
  if(!v||v<=0){flash("Введи сумму",true);return;}
  if(selCat===null){flash("Выбери категорию",true);return;}
- const isStock=stockChk.checked;const envId=isStock?stockSel.value:null;
+ const isStock=stockOn;const envId=isStock?stockSel.value:null;
  const tx={a:v,c:selCat,n:document.getElementById("noteInput").value.trim(),d:Date.now()};
  if(isStock){tx.stock=true;tx.env=envId;const e=envById(envId);if(e)e.amt-=v;}
  S.tx.unshift(tx);save();
  amtEl.value="";document.getElementById("noteInput").value="";conv.textContent="";
  document.querySelectorAll(".cat").forEach(x=>x.classList.remove("sel"));selCat=null;
- stockChk.checked=false;stockEnv.classList.remove("show");
+ stockOn=false;stockBox.classList.remove("on");stockEnv.classList.remove("show");
  flash(isStock?"Записано, списано из буфера ✓":"Записано ✓");renderSum();};
 
 function flash(msg,err){const t=document.getElementById("toast");t.textContent=msg;
