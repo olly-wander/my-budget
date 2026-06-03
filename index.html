@@ -43,9 +43,23 @@ body{font-family:'Manrope',-apple-system,sans-serif;background:var(--cream);colo
 .cat.sel .nm{color:#fff}
 .note{width:100%;margin-top:16px;border:1.5px solid var(--line);border-radius:15px;padding:14px 16px;font-family:'Manrope';font-size:15px;color:var(--ink);background:var(--card);outline:none}
 .note::placeholder{color:#B8AF9C}
+.stockbox{margin-top:13px;background:var(--card);border:1.5px solid var(--line);border-radius:15px;padding:13px 15px}
+.stockrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.stockrow label{font-size:13.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:8px}
+.switch{position:relative;width:46px;height:27px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:var(--line);border-radius:27px;transition:.2s;cursor:pointer}
+.slider:before{content:"";position:absolute;width:21px;height:21px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch input:checked + .slider{background:var(--sage)}
+.switch input:checked + .slider:before{transform:translateX(19px)}
+.stockenv{margin-top:11px;display:none}
+.stockenv.show{display:block}
+.stockenv select{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;font-family:'Manrope';font-size:14px;color:var(--ink);background:var(--cream);outline:none}
+.stockhint{font-size:11.5px;color:#9A917F;font-style:italic;margin-top:7px;line-height:1.4}
 .bigbtn{width:100%;margin-top:13px;border:none;border-radius:17px;background:var(--terra);color:#fff;font-family:'Manrope';font-weight:700;font-size:16px;padding:17px;cursor:pointer;box-shadow:0 4px 16px rgba(201,123,99,.32);transition:transform .12s}
 .bigbtn:active{transform:scale(.98)}
 .bigbtn.ghost{background:var(--soft);color:var(--navy);box-shadow:none;font-size:15px;padding:13px;margin-top:9px}
+.bigbtn.small{font-size:14px;padding:12px;margin-top:0}
 .toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:calc(96px + env(safe-area-inset-bottom));background:var(--sage);color:#fff;padding:13px 24px;border-radius:30px;font-weight:700;font-size:14px;opacity:0;pointer-events:none;transition:all .3s;z-index:50;box-shadow:var(--shadow2)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .statbig{background:linear-gradient(135deg,var(--navy),#4A5C82);border-radius:24px;padding:22px;color:#fff;margin-top:14px;box-shadow:var(--shadow2)}
@@ -92,10 +106,16 @@ body{font-family:'Manrope',-apple-system,sans-serif;background:var(--cream);colo
 .field input,.field select{width:100%;border:1.5px solid var(--line);border-radius:13px;padding:12px 14px;font-family:'Manrope';font-size:15px;color:var(--ink);outline:none;background:var(--cream)}
 .warn{background:var(--softterra);border-radius:14px;padding:13px 15px;font-size:12.5px;color:#9A4F38;line-height:1.55;margin-top:6px}
 .okbox{background:var(--softsage);border-radius:14px;padding:13px 15px;font-size:12.5px;color:#3F5A4B;line-height:1.55;margin-top:6px}
-.envgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:4px 0 12px}
-.env{border-radius:14px;padding:11px 8px;text-align:center}
-.env .el{font-size:10.5px;font-weight:700;opacity:.85}
-.env .ev{font-family:'Fraunces',serif;font-size:19px;font-weight:600;margin-top:2px}
+.envgrid2{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:4px 0 12px}
+.envtile{border-radius:16px;padding:13px 8px 12px;text-align:center;cursor:pointer;position:relative;transition:transform .12s;min-height:74px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.envtile:active{transform:scale(.97)}
+.envtile .etn{font-size:11.5px;font-weight:700;line-height:1.15;letter-spacing:-.01em}
+.envtile .etv{font-family:'Fraunces',serif;font-size:21px;font-weight:600;line-height:1}
+.envtile .etpen{position:absolute;top:6px;right:7px;font-size:11px;opacity:.5}
+.bufcard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px 17px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow)}
+.bufcard .l{font-size:11px;color:#A39A87;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.bufcard .v{font-family:'Fraunces',serif;font-size:26px;font-weight:600;color:var(--navy);margin-top:2px}
+.envactions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:2px}
 .month-sw{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:14px}
 .month-sw button{background:var(--card);border:1px solid var(--line);width:38px;height:38px;border-radius:50%;font-size:18px;color:var(--navy);cursor:pointer}
 .month-sw .mname{font-family:'Fraunces',serif;font-weight:600;font-size:19px;min-width:150px;text-align:center}
@@ -103,7 +123,8 @@ body{font-family:'Manrope',-apple-system,sans-serif;background:var(--cream);colo
 .logdate{font-family:'Fraunces',serif;font-size:13px;font-weight:600;color:var(--navy);margin:0 2px 7px;display:flex;justify-content:space-between;align-items:baseline}
 .logdate .dsum{font-size:12px;color:#9A917F;font-weight:600}
 .logitem{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:7px}
-.logitem .lic{width:26px;height:26px;display:inline-flex;flex-shrink:0}
+.logitem.stock{border-style:dashed;border-color:var(--gold);background:var(--softgold)}
+.logitem .lic{width:26px;height:26px;display:inline-flex;flex-shrink:0;font-size:20px;align-items:center;justify-content:center}
 .logitem .lic svg{width:26px;height:26px}
 .logitem .linfo{flex:1;min-width:0}
 .logitem .lt1{font-size:13.5px;font-weight:600;color:var(--ink)}
@@ -114,8 +135,11 @@ body{font-family:'Manrope',-apple-system,sans-serif;background:var(--cream);colo
 .logempty{text-align:center;color:#B8AF9C;padding:30px 20px;font-size:13.5px;font-style:italic}
 .modal{position:fixed;inset:0;background:rgba(46,42,58,.4);display:none;align-items:center;justify-content:center;z-index:60;padding:24px}
 .modal.show{display:flex}
-.modalc{background:var(--cream);border-radius:22px;padding:22px;width:100%;max-width:360px;box-shadow:var(--shadow2)}
+.modalc{background:var(--cream);border-radius:22px;padding:22px;width:100%;max-width:360px;box-shadow:var(--shadow2);max-height:88vh;overflow-y:auto}
 .modalc h3{font-family:'Fraunces',serif;font-size:19px;font-weight:600;color:var(--navy);margin-bottom:14px}
+.swatch{display:flex;gap:8px;flex-wrap:wrap}
+.swatch span{width:30px;height:30px;border-radius:9px;cursor:pointer;border:2.5px solid transparent}
+.swatch span.sel{border-color:var(--ink)}
 .nav{position:fixed;bottom:0;left:0;right:0;background:rgba(251,248,242,.93);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:9px 4px calc(9px + env(safe-area-inset-bottom));z-index:40;max-width:520px;margin:0 auto}
 .nav button{background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:5px 8px;border-radius:13px;transition:all .15s}
 .nav button .ni{font-size:21px;filter:grayscale(.35);opacity:.45;transition:all .15s}
@@ -139,6 +163,16 @@ body{font-family:'Manrope',-apple-system,sans-serif;background:var(--cream);colo
  <div class="seclabel">Категория</div>
  <div class="cats" id="cats"></div>
  <input class="note" id="noteInput" type="text" placeholder="Комментарий (необязательно)" />
+ <div class="stockbox">
+   <div class="stockrow">
+     <label>📦 Это закупка впрок</label>
+     <span class="switch"><input type="checkbox" id="stockChk"><span class="slider"></span></span>
+   </div>
+   <div class="stockenv" id="stockEnv">
+     <select id="stockSel"></select>
+     <div class="stockhint">Сумма спишется из выбранного конверта буфера и не попадёт в месячный лимит — деньги на неё копились заранее.</div>
+   </div>
+ </div>
  <button class="bigbtn" id="saveBtn">Записать трату</button>
 </div>
 
@@ -184,18 +218,13 @@ body{font-family:'Manrope',-apple-system,sans-serif;background:var(--cream);colo
  </div>
  <div class="setcard">
    <h3>🛟 Буфер на крупные траты</h3>
-   <div class="hint">Фонд под нерегулярные расходы: одежда и обувь, закупки впрок и непредвиденное. Откладывай сюда каждый месяц, а крупную покупку списывай отсюда — тогда не будет «провальных» месяцев.</div>
-   <div class="envgrid">
-     <div class="env" style="background:var(--softsage)"><div class="el" style="color:var(--sage)">Одежда</div><div class="ev" id="eClo" style="color:var(--sage)">0</div></div>
-     <div class="env" style="background:var(--softgold)"><div class="el" style="color:var(--gold)">Склад</div><div class="ev" id="eSto" style="color:var(--gold)">0</div></div>
-     <div class="env" style="background:var(--softterra)"><div class="el" style="color:var(--terra)">Непредвид.</div><div class="ev" id="eUnf" style="color:var(--terra)">0</div></div>
+   <div class="hint">Фонд под нерегулярные расходы. Откладывай сюда каждый месяц, а крупную покупку списывай отсюда (или отмечай «закупка впрок» при вводе) — тогда не будет «провальных» месяцев.</div>
+   <div class="envgrid2" id="envList"></div>
+   <div class="bufcard"><div><div class="l">Всего в буфере</div><div class="v" id="bufVal">0 ¥</div></div><span style="font-size:26px">🛟</span></div>
+   <div class="envactions">
+     <button class="bigbtn ghost small" id="envAddBtn">＋ Новый конверт</button>
+     <button class="bigbtn ghost small" id="envMoveBtn">⇄ Внести / списать</button>
    </div>
-   <div class="mini" style="box-shadow:none;border-color:var(--line);margin-bottom:12px"><div class="lab">Всего в буфере</div><div class="val" id="bufVal" style="color:var(--navy)">0 ¥</div></div>
-   <div class="field"><label>Сумма, ¥</label><input id="bufIn" type="number" inputmode="decimal" placeholder="например 450"></div>
-   <div class="field"><label>Конверт</label>
-     <select id="bufEnv"><option value="clo">👗 Одежда и обувь</option><option value="sto">📦 Склад (впрок)</option><option value="unf">🧩 Непредвиденное</option></select></div>
-   <button class="bigbtn ghost" id="bufAdd">＋ Отложить в буфер</button>
-   <button class="bigbtn ghost" id="bufSpend" style="color:var(--terra)">－ Списать трату из буфера</button>
  </div>
  <div class="setcard">
    <h3>✈️ Накопления на поездку в Минск</h3>
@@ -240,10 +269,29 @@ body{font-family:'Manrope',-apple-system,sans-serif;background:var(--cream);colo
 <div class="modal" id="editModal"><div class="modalc">
   <h3>Изменить трату</h3>
   <div class="field"><label>Сумма, ¥</label><input id="edAmount" type="number" inputmode="decimal"></div>
+  <div class="field"><label>Дата и время</label><input id="edDate" type="datetime-local"></div>
   <div class="field"><label>Категория</label><select id="edCat"></select></div>
   <div class="field"><label>Комментарий</label><input id="edNote" type="text" placeholder="необязательно"></div>
   <button class="bigbtn" id="edSave">Сохранить</button>
   <button class="bigbtn ghost" id="edCancel">Отмена</button>
+</div></div>
+
+<div class="modal" id="envModal"><div class="modalc">
+  <h3 id="envmTitle">Конверт</h3>
+  <div class="field"><label>Название</label><input id="envmName" type="text" placeholder="например, Витамины"></div>
+  <div class="field"><label>Цвет</label><div class="swatch" id="envmSwatch"></div></div>
+  <button class="bigbtn" id="envmSave">Сохранить</button>
+  <button class="bigbtn ghost" id="envmDelete" style="color:var(--terra)">Удалить конверт</button>
+  <button class="bigbtn ghost" id="envmCancel">Отмена</button>
+</div></div>
+
+<div class="modal" id="moveModal"><div class="modalc">
+  <h3>Внести / списать</h3>
+  <div class="field"><label>Конверт</label><select id="mvSel"></select></div>
+  <div class="field"><label>Сумма, ¥</label><input id="mvAmount" type="number" inputmode="decimal" placeholder="например 450"></div>
+  <button class="bigbtn" id="mvAdd">＋ Отложить в конверт</button>
+  <button class="bigbtn ghost" id="mvSpend" style="color:var(--terra)">－ Списать из конверта</button>
+  <button class="bigbtn ghost" id="mvCancel">Отмена</button>
 </div></div>
 
 <div class="nav">
@@ -262,16 +310,41 @@ const CATS=[
 ["👗","Личные вещи"],["💊","Здоровье"],["💪","Спортзал"],["✈️","Путешествия и поездки"],
 ["🧳","Закупки в Минск"],["🧩","Прочее"]
 ];
-const DB="budget_v2", BK="budget_v2_backup";
-const defaults={limit:3500,rateByn:0.44,rateRub:11.45,goal:0,trip:0,buf:{clo:0,sto:0,unf:0},tx:[],fxUpdated:"",bkUpdated:""};
-let S=load();
+const ENVCOLORS=["#6E8C7B","#D8A24A","#C97B63","#3B4A6B","#8B6F9E","#5C8A9E","#B0794A","#7A9B6E"];
+const DB="budget_v3", BK="budget_v3_backup", OLD="budget_v2";
+const defaults={limit:3500,rateByn:0.44,rateRub:11.45,goal:0,trip:0,
+  envs:[{id:"clo",name:"Одежда и обувь",color:"#6E8C7B",amt:0},
+        {id:"sto",name:"Склад (впрок)",color:"#D8A24A",amt:0},
+        {id:"unf",name:"Непредвиденное",color:"#C97B63",amt:0}],
+  tx:[],fxUpdated:"",bkUpdated:""};
+
 function clone(o){return JSON.parse(JSON.stringify(o));}
-function load(){try{let r=localStorage.getItem(DB);
- if(!r)r=localStorage.getItem(BK);
+function migrate(o){
+ // из старого формата buf:{clo,sto,unf} -> envs[]
+ if(o.envs)return o;
+ const b=o.buf||{clo:0,sto:0,unf:0};
+ o.envs=[{id:"clo",name:"Одежда и обувь",color:"#6E8C7B",amt:+b.clo||0},
+         {id:"sto",name:"Склад (впрок)",color:"#D8A24A",amt:+b.sto||0},
+         {id:"unf",name:"Непредвиденное",color:"#C97B63",amt:+b.unf||0}];
+ delete o.buf;return o;
+}
+function load(){try{
+ let r=localStorage.getItem(DB)||localStorage.getItem(BK)||localStorage.getItem(OLD);
  if(!r)return clone(defaults);
- const o=JSON.parse(r);if(!o.buf)o.buf={clo:0,sto:0,unf:0};return Object.assign(clone(defaults),o);}
+ let o=JSON.parse(r);o=migrate(o);
+ const base=clone(defaults);const merged=Object.assign(base,o);
+ if(!Array.isArray(merged.envs)||!merged.envs.length)merged.envs=clone(defaults.envs);
+ return merged;}
  catch(e){return clone(defaults);}}
+let S=load();
 function save(){try{const s=JSON.stringify(S);localStorage.setItem(DB,s);localStorage.setItem(BK,s);}catch(e){alert("Не удалось сохранить — возможно, память переполнена.");}}
+function envById(id){return S.envs.find(e=>e.id===id);}
+function uid(){return "e"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+
+// ---- число с копейками: 15.9 -> "15,9", 300 -> "300", 15.90 -> "15,9" ----
+function fmt(n){n=Math.round((+n+Number.EPSILON)*100)/100;
+ let s=n.toLocaleString("ru-RU",{minimumFractionDigits:0,maximumFractionDigits:2});
+ return s;}
 
 let selCat=null;
 const grid=document.getElementById("cats");
@@ -280,21 +353,30 @@ CATS.forEach(([em,nm],i)=>{const d=document.createElement("div");d.className="ca
  d.onclick=()=>{document.querySelectorAll(".cat").forEach(x=>x.classList.remove("sel"));d.classList.add("sel");selCat=i;};
  grid.appendChild(d);});
 
+// stock toggle
+const stockChk=document.getElementById("stockChk"),stockEnv=document.getElementById("stockEnv"),stockSel=document.getElementById("stockSel");
+function fillStockSel(){stockSel.innerHTML=S.envs.map(e=>`<option value="${e.id}">${e.name} · ${fmt(e.amt)} ¥</option>`).join("");}
+stockChk.onchange=()=>{stockEnv.classList.toggle("show",stockChk.checked);if(stockChk.checked)fillStockSel();};
+
 const amtEl=document.getElementById("amount"),conv=document.getElementById("convert");
 amtEl.oninput=()=>{const v=parseFloat(amtEl.value);if(!v){conv.textContent="";return;}
- conv.textContent=`≈ ${(v*S.rateByn).toFixed(2)} BYN  ·  ${(v*S.rateRub).toFixed(0)} RUB`;};
+ conv.textContent=`≈ ${(v*S.rateByn).toFixed(2)} BYN  ·  ${(v*S.rateRub).toFixed(2)} RUB`;};
 
 document.getElementById("saveBtn").onclick=()=>{const v=parseFloat(amtEl.value);
  if(!v||v<=0){flash("Введи сумму",true);return;}
  if(selCat===null){flash("Выбери категорию",true);return;}
- S.tx.unshift({a:v,c:selCat,n:document.getElementById("noteInput").value.trim(),d:Date.now()});save();
+ const isStock=stockChk.checked;const envId=isStock?stockSel.value:null;
+ const tx={a:v,c:selCat,n:document.getElementById("noteInput").value.trim(),d:Date.now()};
+ if(isStock){tx.stock=true;tx.env=envId;const e=envById(envId);if(e)e.amt-=v;}
+ S.tx.unshift(tx);save();
  amtEl.value="";document.getElementById("noteInput").value="";conv.textContent="";
  document.querySelectorAll(".cat").forEach(x=>x.classList.remove("sel"));selCat=null;
- flash("Записано ✓");renderSum();};
+ stockChk.checked=false;stockEnv.classList.remove("show");
+ flash(isStock?"Записано, списано из буфера ✓":"Записано ✓");renderSum();};
 
 function flash(msg,err){const t=document.getElementById("toast");t.textContent=msg;
  t.style.background=err?"var(--terra)":"var(--sage)";t.classList.add("show");
- setTimeout(()=>t.classList.remove("show"),1400);}
+ setTimeout(()=>t.classList.remove("show"),1600);}
 
 let viewM=new Date();viewM.setDate(1);
 const MN=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
@@ -304,14 +386,18 @@ function monthTxIdx(){const y=viewM.getFullYear(),m=viewM.getMonth();
  return S.tx.map((t,i)=>({t,i})).filter(({t})=>{const d=new Date(t.d);return d.getFullYear()===y&&d.getMonth()===m;});}
 
 function renderSum(){document.getElementById("mName").textContent=`${MN[viewM.getMonth()]} ${viewM.getFullYear()}`;
- const items=monthTxIdx();const tx=items.map(x=>x.t);const spent=tx.reduce((s,t)=>s+t.a,0);
+ const items=monthTxIdx();
+ // в месячный лимит идут только НЕскладские траты
+ const limitItems=items.filter(({t})=>!t.stock);
+ const tx=limitItems.map(x=>x.t);const spent=tx.reduce((s,t)=>s+t.a,0);
  document.getElementById("spentVal").textContent=fmt(spent)+" ¥";
- document.getElementById("spentMeta").textContent=`из лимита ${fmt(S.limit)} ¥  ·  ≈ ${(spent*S.rateByn).toFixed(0)} BYN  ·  ${(spent*S.rateRub).toFixed(0)} RUB`;
+ document.getElementById("spentMeta").textContent=`из лимита ${fmt(S.limit)} ¥  ·  ≈ ${(spent*S.rateByn).toFixed(2)} BYN  ·  ${(spent*S.rateRub).toFixed(2)} RUB`;
  const pct=Math.min(100,spent/S.limit*100);const bar=document.getElementById("spentBar");
  bar.style.width=pct+"%";bar.style.background=spent>S.limit?"var(--terra)":"var(--gold)";
  const left=S.limit-spent;const lv=document.getElementById("leftVal");
  lv.textContent=fmt(left)+" ¥";lv.style.color=left<0?"var(--terra)":"var(--sage)";
- document.getElementById("cntVal").textContent=tx.length;
+ document.getElementById("cntVal").textContent=items.length;
+ // диаграмма — по НЕскладским тратам (чтобы крупные закупки не искажали распределение быта)
  const byc={};tx.forEach(t=>byc[t.c]=(byc[t.c]||0)+t.a);
  const arr=Object.entries(byc).sort((a,b)=>b[1]-a[1]);
  lastArr=arr;lastTotal=spent;renderChart();
@@ -320,11 +406,9 @@ function renderSum(){document.getElementById("mName").textContent=`${MN[viewM.ge
  arr.forEach(([ci,sum])=>{const [em,nm]=CATS[ci];const row=document.createElement("div");row.className="crow";
    row.innerHTML=`<span class="ic">${em}</span><span class="nm">${nm}</span><span class="track"><i style="width:${sum/max*100}%"></i></span><span class="am">${fmt(sum)} ¥</span>`;cl.appendChild(row);});
  renderLog(items);}
-function fmt(n){return Math.round(n).toLocaleString("ru-RU");}
 
 function renderLog(items){const box=document.getElementById("logList");
  if(!items.length){box.innerHTML='<div class="logempty">Пока нет записей в этом месяце</div>';return;}
- // group by day
  const days={};items.forEach(({t,i})=>{const d=new Date(t.d);const key=d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate();
    (days[key]=days[key]||[]).push({t,i});});
  const keys=Object.keys(days).sort((a,b)=>{const [y1,m1,d1]=a.split("-").map(Number),[y2,m2,d2]=b.split("-").map(Number);
@@ -336,23 +420,35 @@ function renderLog(items){const box=document.getElementById("logList");
    html+=`<div class="logday"><div class="logdate"><span>${dd} ${MN[m].toLowerCase()}, ${dow}</span><span class="dsum">${fmt(dsum)} ¥</span></div>`;
    list.sort((a,b)=>b.t.d-a.t.d).forEach(({t,i})=>{const [em,nm]=CATS[t.c];
      const time=new Date(t.d).toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
-     const sub=t.n?t.n:time;
-     html+=`<div class="logitem"><span class="lic">${em}</span><div class="linfo"><div class="lt1">${nm}</div><div class="lt2">${sub}</div></div><span class="lam">${fmt(t.a)} ¥</span><span class="lact"><button onclick="editTx(${i})">✎</button><button onclick="delTx(${i})">✕</button></span></div>`;});
+     let sub=t.n?t.n:time;
+     if(t.stock){const e=envById(t.env);sub=`из буфера: ${e?e.name:"?"}`+(t.n?` · ${t.n}`:"");}
+     html+=`<div class="logitem ${t.stock?"stock":""}"><span class="lic">${em}</span><div class="linfo"><div class="lt1">${nm}</div><div class="lt2">${sub}</div></div><span class="lam">${fmt(t.a)} ¥</span><span class="lact"><button onclick="editTx(${i})">✎</button><button onclick="delTx(${i})">✕</button></span></div>`;});
    html+=`</div>`;});
  box.innerHTML=html;}
 
-window.delTx=function(i){if(!confirm("Удалить эту запись?"))return;S.tx.splice(i,1);save();renderSum();flash("Удалено ✓");};
-let editIdx=null;
-window.editTx=function(i){editIdx=i;const t=S.tx[i];
+window.delTx=function(i){if(!confirm("Удалить эту запись?"))return;
+ const t=S.tx[i];
+ // если складская — вернуть деньги в конверт
+ if(t.stock){const e=envById(t.env);if(e)e.amt+=t.a;}
+ S.tx.splice(i,1);save();renderSum();renderGoal();flash("Удалено ✓");};
+
+let editIdx=null,editPrev=null;
+function toLocalInput(ts){const d=new Date(ts);const p=n=>String(n).padStart(2,"0");
+ return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+"T"+p(d.getHours())+":"+p(d.getMinutes());}
+window.editTx=function(i){editIdx=i;const t=S.tx[i];editPrev={a:t.a,stock:!!t.stock,env:t.env};
  document.getElementById("edAmount").value=t.a;
+ document.getElementById("edDate").value=toLocalInput(t.d);
  const sel=document.getElementById("edCat");sel.innerHTML=CATS.map((c,ci)=>`<option value="${ci}" ${ci===t.c?"selected":""}>${c[0]} ${c[1]}</option>`).join("");
  document.getElementById("edNote").value=t.n||"";
  document.getElementById("editModal").classList.add("show");};
 document.getElementById("edCancel").onclick=()=>document.getElementById("editModal").classList.remove("show");
 document.getElementById("edSave").onclick=()=>{const t=S.tx[editIdx];
  const v=parseFloat(document.getElementById("edAmount").value);if(!v||v<=0){flash("Введи сумму",true);return;}
+ // если складская — скорректировать конверт на разницу
+ if(editPrev.stock){const e=envById(editPrev.env);if(e)e.amt+=editPrev.a-v;}
  t.a=v;t.c=+document.getElementById("edCat").value;t.n=document.getElementById("edNote").value.trim();
- save();document.getElementById("editModal").classList.remove("show");renderSum();flash("Изменено ✓");};
+ const dv=document.getElementById("edDate").value;if(dv){t.d=new Date(dv).getTime();}
+ save();document.getElementById("editModal").classList.remove("show");renderSum();renderGoal();flash("Изменено ✓");};
 
 const PAL=["#3B4A6B","#C97B63","#6E8C7B","#D8A24A","#8B6F9E","#B0794A","#5C8A9E","#C26B86",
           "#7A9B6E","#A8853D","#6B5B95","#C98A5E","#4F7C8A","#B5705C","#88A06B","#9E6B7C",
@@ -393,23 +489,67 @@ function renderGoal(){
  document.getElementById("goalMeta").textContent=`цель — 15 000 ¥ к июню 2027  ·  осталось ${fmt(Math.max(0,15000-S.goal))} ¥`;
  document.getElementById("tripVal").textContent=fmt(S.trip)+" ¥";
  document.getElementById("tripLeft").textContent=fmt(Math.max(0,7000-S.trip))+" ¥";
- document.getElementById("eClo").textContent=fmt(S.buf.clo);
- document.getElementById("eSto").textContent=fmt(S.buf.sto);
- document.getElementById("eUnf").textContent=fmt(S.buf.unf);
- document.getElementById("bufVal").textContent=fmt(S.buf.clo+S.buf.sto+S.buf.unf)+" ¥";}
+ // конверты — плитки
+ const box=document.getElementById("envList");
+ box.innerHTML=S.envs.map(e=>`<div class="envtile" style="background:${hex2soft(e.color)}" onclick="editEnv('${e.id}')">
+   <span class="etpen" style="color:${e.color}">✎</span>
+   <span class="etn" style="color:${e.color}">${e.name}</span>
+   <span class="etv" style="color:${e.color}">${fmt(e.amt)}</span></div>`).join("");
+ const tot=S.envs.reduce((s,e)=>s+(+e.amt||0),0);
+ document.getElementById("bufVal").textContent=fmt(tot)+" ¥";}
+function hex2soft(hex){return hex+"22";}
 
 document.getElementById("addGoal").onclick=()=>{const v=parseFloat(document.getElementById("ordIn").value);
  if(!v){flash("Введи сумму",true);return;}S.goal+=v;save();document.getElementById("ordIn").value="";renderGoal();flash("В копилке ✓");};
-document.getElementById("bufAdd").onclick=()=>{const v=parseFloat(document.getElementById("bufIn").value);
- if(!v){flash("Введи сумму",true);return;}const e=document.getElementById("bufEnv").value;
- S.buf[e]+=v;save();document.getElementById("bufIn").value="";renderGoal();flash("Отложено в буфер ✓");};
-document.getElementById("bufSpend").onclick=()=>{const v=parseFloat(document.getElementById("bufIn").value);
- if(!v){flash("Введи сумму",true);return;}const e=document.getElementById("bufEnv").value;
- S.buf[e]-=v;save();document.getElementById("bufIn").value="";renderGoal();flash("Списано из буфера ✓");};
 document.getElementById("addTrip").onclick=()=>{const v=parseFloat(document.getElementById("tripIn").value);
  if(!v){flash("Введи сумму",true);return;}S.trip+=v;save();document.getElementById("tripIn").value="";renderGoal();flash("Отложено ✓");};
 document.getElementById("spendTrip").onclick=()=>{if(!confirm("Поездка состоялась? Фонд поездок обнулится."))return;
  S.trip=0;save();renderGoal();flash("Фонд обнулён ✓");};
+
+// ---- конверты: добавление/редактирование/удаление ----
+let envEditId=null,envPickColor=ENVCOLORS[0];
+function openEnvModal(id){envEditId=id;
+ const sw=document.getElementById("envmSwatch");
+ const e=id?envById(id):null;
+ envPickColor=e?e.color:ENVCOLORS[0];
+ document.getElementById("envmTitle").textContent=id?"Изменить конверт":"Новый конверт";
+ document.getElementById("envmName").value=e?e.name:"";
+ document.getElementById("envmDelete").style.display=id?"block":"none";
+ sw.innerHTML=ENVCOLORS.map(c=>`<span data-c="${c}" style="background:${c}" class="${c===envPickColor?"sel":""}"></span>`).join("");
+ sw.querySelectorAll("span").forEach(s=>s.onclick=()=>{envPickColor=s.dataset.c;
+   sw.querySelectorAll("span").forEach(x=>x.classList.remove("sel"));s.classList.add("sel");});
+ document.getElementById("envModal").classList.add("show");}
+window.editEnv=id=>openEnvModal(id);
+document.getElementById("envAddBtn").onclick=()=>openEnvModal(null);
+document.getElementById("envmCancel").onclick=()=>document.getElementById("envModal").classList.remove("show");
+document.getElementById("envmSave").onclick=()=>{const nm=document.getElementById("envmName").value.trim();
+ if(!nm){flash("Введи название",true);return;}
+ if(envEditId){const e=envById(envEditId);e.name=nm;e.color=envPickColor;}
+ else{S.envs.push({id:uid(),name:nm,color:envPickColor,amt:0});}
+ save();document.getElementById("envModal").classList.remove("show");renderGoal();fillStockSel();flash("Сохранено ✓");};
+document.getElementById("envmDelete").onclick=()=>{const e=envById(envEditId);if(!e)return;
+ if(Math.round(e.amt*100)!==0){
+   const others=S.envs.filter(x=>x.id!==e.id);
+   if(!others.length){flash("Нельзя удалить единственный конверт",true);return;}
+   const names=others.map((o,i)=>`${i+1}. ${o.name}`).join("\n");
+   const ans=prompt(`В конверте «${e.name}» лежит ${fmt(e.amt)} ¥. Куда перенести? Введи номер:\n${names}`);
+   const idx=parseInt(ans)-1;if(isNaN(idx)||idx<0||idx>=others.length){flash("Перенос отменён",true);return;}
+   others[idx].amt+=e.amt;}
+ else{if(!confirm(`Удалить конверт «${e.name}»?`))return;}
+ S.envs=S.envs.filter(x=>x.id!==e.id);
+ save();document.getElementById("envModal").classList.remove("show");renderGoal();fillStockSel();flash("Конверт удалён ✓");};
+
+// ---- внести/списать в конверт ----
+document.getElementById("envMoveBtn").onclick=()=>{const sel=document.getElementById("mvSel");
+ sel.innerHTML=S.envs.map(e=>`<option value="${e.id}">${e.name} · ${fmt(e.amt)} ¥</option>`).join("");
+ document.getElementById("mvAmount").value="";document.getElementById("moveModal").classList.add("show");};
+document.getElementById("mvCancel").onclick=()=>document.getElementById("moveModal").classList.remove("show");
+document.getElementById("mvAdd").onclick=()=>{const v=parseFloat(document.getElementById("mvAmount").value);
+ if(!v){flash("Введи сумму",true);return;}const e=envById(document.getElementById("mvSel").value);
+ e.amt+=v;save();document.getElementById("moveModal").classList.remove("show");renderGoal();fillStockSel();flash("Отложено в буфер ✓");};
+document.getElementById("mvSpend").onclick=()=>{const v=parseFloat(document.getElementById("mvAmount").value);
+ if(!v){flash("Введи сумму",true);return;}const e=envById(document.getElementById("mvSel").value);
+ e.amt-=v;save();document.getElementById("moveModal").classList.remove("show");renderGoal();fillStockSel();flash("Списано из буфера ✓");};
 
 function fillSet(){document.getElementById("limitIn").value=S.limit;
  document.getElementById("rateByn").value=S.rateByn;document.getElementById("rateRub").value=S.rateRub;
@@ -445,9 +585,10 @@ document.getElementById("copyBtn").onclick=async()=>{const data=JSON.stringify(S
    try{document.execCommand("copy");markBackup();flash("Скопировано — вставь в Заметки ✓");}catch(e2){flash("Не удалось скопировать",true);}
    document.body.removeChild(ta);}};
 document.getElementById("pasteBtn").onclick=async()=>{
- try{const txt=await navigator.clipboard.readText();const d=JSON.parse(txt);
+ try{const txt=await navigator.clipboard.readText();let d=JSON.parse(txt);d=migrate(d);
    if(!confirm("Заменить текущие данные данными из буфера?"))return;
-   S=Object.assign(clone(defaults),d);if(!S.buf)S.buf={clo:0,sto:0,unf:0};save();fillSet();renderSum();renderGoal();flash("Вставлено ✓");}
+   S=Object.assign(clone(defaults),d);if(!Array.isArray(S.envs)||!S.envs.length)S.envs=clone(defaults.envs);
+   save();fillSet();renderSum();renderGoal();fillStockSel();flash("Вставлено ✓");}
  catch(e){flash("В буфере нет данных приложения",true);}};
 
 document.getElementById("expBtn").onclick=()=>{const blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
@@ -456,8 +597,9 @@ document.getElementById("expBtn").onclick=()=>{const blob=new Blob([JSON.stringi
  a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);markBackup();flash("Сохрани файл (Файлы / Заметки)");};
 document.getElementById("impBtn").onclick=()=>document.getElementById("impFile").click();
 document.getElementById("impFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
- r.onload=()=>{try{const d=JSON.parse(r.result);if(!confirm("Заменить текущие данные данными из файла?"))return;
-   S=Object.assign(clone(defaults),d);if(!S.buf)S.buf={clo:0,sto:0,unf:0};save();fillSet();renderSum();renderGoal();flash("Импортировано ✓");}
+ r.onload=()=>{try{let d=JSON.parse(r.result);d=migrate(d);if(!confirm("Заменить текущие данные данными из файла?"))return;
+   S=Object.assign(clone(defaults),d);if(!Array.isArray(S.envs)||!S.envs.length)S.envs=clone(defaults.envs);
+   save();fillSet();renderSum();renderGoal();fillStockSel();flash("Импортировано ✓");}
    catch(err){flash("Файл не распознан",true);}};r.readAsText(f);};
 
 const titles={add:["Новая трата","купила — внеси сразу"],sum:["Месяц","сводка и журнал"],
@@ -470,7 +612,7 @@ document.querySelectorAll(".nav button").forEach(b=>{b.onclick=()=>{
  document.getElementById("pageSub").textContent=titles[p][1];
  if(p==="sum")renderSum();if(p==="goal")renderGoal();if(p==="set")fillSet();window.scrollTo(0,0);};});
 
-fillSet();renderSum();renderGoal();
+fillSet();renderSum();renderGoal();fillStockSel();
 </script>
 </body>
 </html>
