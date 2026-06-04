@@ -270,6 +270,16 @@ body{font-family:'Manrope',-apple-system,sans-serif;background:var(--cream);colo
   <div class="field"><label>Дата и время</label><input id="edDate" type="datetime-local"></div>
   <div class="field"><label>Категория</label><select id="edCat"></select></div>
   <div class="field"><label>Комментарий</label><input id="edNote" type="text" placeholder="необязательно"></div>
+  <div class="stockbox" id="edStockBox" style="margin-top:0;margin-bottom:12px">
+    <div class="stockrow" id="edStockRow">
+      <label>📦 Это закупка впрок</label>
+      <span class="switch"></span>
+    </div>
+    <div class="stockenv" id="edStockEnv">
+      <select id="edStockSel"></select>
+      <div class="stockhint">Сумма спишется из выбранного конверта буфера и не попадёт в месячный лимит.</div>
+    </div>
+  </div>
   <button class="bigbtn" id="edSave">Сохранить</button>
   <button class="bigbtn ghost" id="edCancel">Отмена</button>
 </div></div>
@@ -434,7 +444,13 @@ window.delTx=function(i){if(!confirm("Удалить эту запись?"))retu
  if(t.stock){const e=envById(t.env);if(e)e.amt+=t.a;}
  S.tx.splice(i,1);save();renderSum();renderGoal();flash("Удалено ✓");};
 
-let editIdx=null,editPrev=null;
+let editIdx=null,editPrev=null,edStockOn=false;
+const edStockBox=document.getElementById("edStockBox"),edStockRow=document.getElementById("edStockRow"),edStockEnv=document.getElementById("edStockEnv"),edStockSel=document.getElementById("edStockSel");
+function fillEdStockSel(){edStockSel.innerHTML=S.envs.map(e=>`<option value="${e.id}">${e.name} · ${fmt(e.amt)} ¥</option>`).join("");}
+edStockRow.addEventListener("click",()=>{edStockOn=!edStockOn;
+ edStockBox.classList.toggle("on",edStockOn);
+ edStockEnv.classList.toggle("show",edStockOn);
+ if(edStockOn)fillEdStockSel();});
 function toLocalInput(ts){const d=new Date(ts);const p=n=>String(n).padStart(2,"0");
  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+"T"+p(d.getHours())+":"+p(d.getMinutes());}
 window.editTx=function(i){editIdx=i;const t=S.tx[i];editPrev={a:t.a,stock:!!t.stock,env:t.env};
@@ -442,15 +458,24 @@ window.editTx=function(i){editIdx=i;const t=S.tx[i];editPrev={a:t.a,stock:!!t.st
  document.getElementById("edDate").value=toLocalInput(t.d);
  const sel=document.getElementById("edCat");sel.innerHTML=CATS.map((c,ci)=>`<option value="${ci}" ${ci===t.c?"selected":""}>${c[0]} ${c[1]}</option>`).join("");
  document.getElementById("edNote").value=t.n||"";
+ edStockOn=!!t.stock;
+ edStockBox.classList.toggle("on",edStockOn);
+ edStockEnv.classList.toggle("show",edStockOn);
+ fillEdStockSel();
+ if(edStockOn&&t.env)edStockSel.value=t.env;
  document.getElementById("editModal").classList.add("show");};
 document.getElementById("edCancel").onclick=()=>document.getElementById("editModal").classList.remove("show");
 document.getElementById("edSave").onclick=()=>{const t=S.tx[editIdx];
  const v=parseFloat(document.getElementById("edAmount").value);if(!v||v<=0){flash("Введи сумму",true);return;}
- // если складская — скорректировать конверт на разницу
- if(editPrev.stock){const e=envById(editPrev.env);if(e)e.amt+=editPrev.a-v;}
+ // 1) откатить прежнее списание из буфера (если трата была складской — вернуть деньги в прежний конверт)
+ if(editPrev.stock){const oe=envById(editPrev.env);if(oe)oe.amt+=editPrev.a;}
+ // 2) применить новые значения
  t.a=v;t.c=+document.getElementById("edCat").value;t.n=document.getElementById("edNote").value.trim();
  const dv=document.getElementById("edDate").value;if(dv){t.d=new Date(dv).getTime();}
- save();document.getElementById("editModal").classList.remove("show");renderSum();renderGoal();flash("Изменено ✓");};
+ if(edStockOn){const ne=document.getElementById("edStockSel").value;t.stock=true;t.env=ne;
+   const e=envById(ne);if(e)e.amt-=v;}
+ else{delete t.stock;delete t.env;}
+ save();document.getElementById("editModal").classList.remove("show");renderSum();renderGoal();fillStockSel();flash("Изменено ✓");};
 
 const PAL=["#3B4A6B","#C97B63","#6E8C7B","#D8A24A","#8B6F9E","#B0794A","#5C8A9E","#C26B86",
           "#7A9B6E","#A8853D","#6B5B95","#C98A5E","#4F7C8A","#B5705C","#88A06B","#9E6B7C",
